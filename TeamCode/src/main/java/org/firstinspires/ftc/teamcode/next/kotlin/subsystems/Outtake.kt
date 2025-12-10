@@ -216,6 +216,10 @@ object Outtake : Subsystem {  // Added parentheses
             fly.power = 1.0
         }
 
+    val flyWheelAuto: Command
+        get() = InstantCommand{
+            fP = 0.88
+        }
 
     val flywheelBack: Command
         get() = InstantCommand {

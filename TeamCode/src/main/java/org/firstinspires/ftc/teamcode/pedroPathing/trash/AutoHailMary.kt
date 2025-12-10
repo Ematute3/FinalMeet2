@@ -1,5 +1,4 @@
-// Filename: AutonBlueArtifact.kt
-package org.firstinspires.ftc.teamcode.Auton
+package org.firstinspires.ftc.teamcode.pedroPathing.trash
 
 import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.PanelsTelemetry
@@ -10,17 +9,15 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.pedropathing.util.Timer
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
+import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import org.firstinspires.ftc.teamcode.next.kotlin.subsystems.Intake
 import org.firstinspires.ftc.teamcode.next.kotlin.subsystems.Outtake
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import kotlin.math.PI
-
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 

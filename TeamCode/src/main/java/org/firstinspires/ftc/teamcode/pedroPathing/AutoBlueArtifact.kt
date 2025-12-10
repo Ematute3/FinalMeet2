@@ -1,5 +1,5 @@
 // Filename: AutonBlueArtifact.kt
-package org.firstinspires.ftc.teamcode.Auton
+package org.firstinspires.ftc.teamcode.pedroPathing
 
 import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.PanelsTelemetry
@@ -20,12 +20,11 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 @Autonomous(name = "Auton Blue Artifact", group = "Auton")
 @Configurable
 class AutonBlueArtifact : NextFTCOpMode() {
-    // Filename: AutonBlueArtifact.kt  (add near other fields)
     // Timing tunables
-    private val shootWaitSeconds = 1.5            // give more time before shooting at launch
-    private val intakeForwardDurationSeconds = 1.0 // intake ON window during return leg
-    private val reverseIntakeClearSeconds = 2.0    // already used earlier
-    private val flywheelSpinupSeconds = 1.0        // shooter spin-up time
+    private val shootWaitSeconds = 1.5
+    private val intakeForwardDurationSeconds = 1.0
+    private val reverseIntakeClearSeconds = 2.0
+    private val flywheelSpinupSeconds = 1.0
 
     // Per-phase flags
     private var startedReverseClear = false
@@ -34,7 +33,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
     private var completedSpinUp = false
     private var startedIntakeForwardWindow = false
     private var completedIntakeForwardWindow = false
-
 
     private var pathTimer: Timer? = null
     private var actionTimer: Timer? = null
@@ -70,7 +68,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
 
     private var pathState = AutonPath.RobotShoot1
 
-    // Filename: AutonBlueArtifact.kt  (inside setPathState)
     fun setPathState(pState: AutonPath) {
         pathState = pState
         pathTimer?.resetTimer()
@@ -84,7 +81,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
         startedIntakeForwardWindow = false
         completedIntakeForwardWindow = false
     }
-
 
     private var follower: Follower? = null
 
@@ -112,8 +108,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
         private const val toleranceIntakeMagSeq = 5.0
         private var magBallHitDelay = 1.0
 
-        // Pull caps from subsystems (Intake/Outtake already provided by you)
-        // Intake.maxIntakePower is added in your Intake object (see below).
         var intakeMaxPower = Intake.getMaxIntakePower()
         var shootReturnPower = Outtake.getReturnDrivePower()
 
@@ -214,7 +208,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
     private fun autonomousPathUpdate() {
         when (pathState) {
 
-
             AutonPath.RobotShoot1 -> {
                 follower!!.setMaxPower(shootReturnPower)
                 if (pathF1) {
@@ -226,6 +219,9 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     actionTimer!!.resetTimer()
                     startedReverseClear = true
                     completedReverseClear = false
+
+                    // Start flywheel before reaching shootingPose (preload leg)
+                    Outtake.flywheelOn.schedule()
                 }
 
                 if (startedReverseClear && !completedReverseClear &&
@@ -238,9 +234,8 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     if (pusherSetUp1) {
                         pusherSetUp1 = false
                         actionTimer!!.resetTimer()
-                        Outtake.flywheelOn.schedule() // spin up at pose
+                        // Flywheel already spinning from path start
                     }
-                    // More time to shoot before advancing
                     if (actionTimer!!.elapsedTimeSeconds >= shootWaitSeconds) {
                         // TODO: trigger your shooter servo here
                         Outtake.flywheelOff.schedule()
@@ -252,7 +247,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
             AutonPath.RobotIntake1 -> if (!follower!!.isBusy) {
                 follower!!.setMaxPower(intakeMaxPower)
                 if (intakeReached1) {
-                    // Intake forward ON while driving to pickup
                     Intake.runIntake.schedule()
                     follower!!.followPath(robotIntake1!!)
                     intakeReached1 = false
@@ -274,7 +268,10 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     follower!!.followPath(robotGoToShoot1!!)
                     pathF2 = false
 
-                    // Return sequence: reverse 2s -> spin up -> intake forward for EXACTLY 1s -> stop
+                    // Start flywheel spin-up immediately when starting return path
+                    Outtake.flywheelOn.schedule()
+
+                    // Return sequence: reverse 2s -> intake forward for EXACTLY 1s -> stop
                     Intake.reverseIntake.schedule()
                     actionTimer!!.resetTimer()
                     startedReverseClear = true
@@ -285,18 +282,16 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     completedIntakeForwardWindow = false
                 }
 
-                // Finish reverse, spin up
                 if (startedReverseClear && !completedReverseClear &&
                     actionTimer!!.elapsedTimeSeconds >= reverseIntakeClearSeconds) {
                     Intake.stopIntake.schedule()
                     completedReverseClear = true
 
-                    Outtake.flywheelOn.schedule()
+                    // We already turned flywheel on at path start; keep it on
                     actionTimer!!.resetTimer()
                     startedSpinUp = true
                 }
 
-                // After spin-up, intake forward ON for exactly 1 second, then stop
                 if (startedSpinUp && !completedSpinUp &&
                     actionTimer!!.elapsedTimeSeconds >= flywheelSpinupSeconds) {
                     completedSpinUp = true
@@ -317,7 +312,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
                         pusherSetUp2 = false
                         actionTimer!!.resetTimer()
                     }
-                    // Give more time to shoot
                     if (actionTimer!!.elapsedTimeSeconds >= shootWaitSeconds) {
                         // TODO: trigger shooter servo here
                         Outtake.flywheelOff.schedule()
@@ -350,7 +344,9 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     follower!!.followPath(robotGoToShoot2!!)
                     pathF3 = false
 
-                    // Optional: mirror the same return sequence
+                    // Start flywheel spin-up immediately when starting return path
+                    Outtake.flywheelOn.schedule()
+
                     Intake.reverseIntake.schedule()
                     actionTimer!!.resetTimer()
                     startedReverseClear = true; completedReverseClear = false
@@ -362,7 +358,7 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     actionTimer!!.elapsedTimeSeconds >= reverseIntakeClearSeconds) {
                     Intake.stopIntake.schedule()
                     completedReverseClear = true
-                    Outtake.flywheelOn.schedule()
+                    // Flywheel already spinning
                     actionTimer!!.resetTimer()
                     startedSpinUp = true
                 }
@@ -418,7 +414,9 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     follower!!.followPath(robotGoToShoot3!!)
                     pathF4 = false
 
-                    // Optional: mirror the same return sequence
+                    // Start flywheel spin-up immediately when starting return path
+                    Outtake.flywheelOn.schedule()
+
                     Intake.reverseIntake.schedule()
                     actionTimer!!.resetTimer()
                     startedReverseClear = true; completedReverseClear = false
@@ -430,7 +428,7 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     actionTimer!!.elapsedTimeSeconds >= reverseIntakeClearSeconds) {
                     Intake.stopIntake.schedule()
                     completedReverseClear = true
-                    Outtake.flywheelOn.schedule()
+                    // Flywheel already spinning
                     actionTimer!!.resetTimer()
                     startedSpinUp = true
                 }
@@ -505,7 +503,6 @@ class AutonBlueArtifact : NextFTCOpMode() {
                     }
                 }
             }
-
 
             AutonPath.EndAuton -> if (!follower!!.isBusy) {
                 follower!!.followPath(robotGoToShoot4!!)

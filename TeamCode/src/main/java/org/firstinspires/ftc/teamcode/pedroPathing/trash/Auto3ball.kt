@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing
+package org.firstinspires.ftc.teamcode.pedroPathing.trash
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.next.kotlin.subsystems.Outtake
 import kotlin.time.Duration.Companion.seconds
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @Autonomous
 class AutoBackwardShoot : NextFTCOpMode() {

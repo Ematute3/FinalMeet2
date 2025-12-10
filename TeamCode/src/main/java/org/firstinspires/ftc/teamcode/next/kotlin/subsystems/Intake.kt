@@ -28,7 +28,9 @@ object Intake : Subsystem {
         iP = maxIntakePower
     }
 
+
     val reverseIntake = InstantCommand { iP = -1.0 }
+    val intakeSlow = InstantCommand{iP=0.5}
     val reverseIntakeSlow = InstantCommand { iP = -0.75 }
     val reverseIntakeVerySlow = InstantCommand { iP = -0.2 }
     val stopIntake = InstantCommand { iP = 0.0 }
