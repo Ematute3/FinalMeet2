@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing
 
+
 import com.bylazar.telemetry.JoinedTelemetry
 import com.bylazar.telemetry.PanelsTelemetry
 import com.pedropathing.geometry.BezierCurve
@@ -22,12 +23,15 @@ import org.firstinspires.ftc.teamcode.next.kotlin.subsystems.Outtake
 import org.firstinspires.ftc.teamcode.next.kotlin.subsystems.limeLight
 import java.lang.StrictMath.toRadians
 
+
 @Autonomous(name = "finalAuto2")
 class GradeSaverNext : NextFTCOpMode() {
+
 
     private var tele = JoinedTelemetry(PanelsTelemetry.ftcTelemetry, telemetry)
     private lateinit var autoPath: AutoPath
     private var index = 0
+
 
     init {
         addComponents(
@@ -38,9 +42,11 @@ class GradeSaverNext : NextFTCOpMode() {
         )
     }
 
+
     override fun onInit() {
         follower.setStartingPose(Pose(33.0, 136.0, Math.toRadians(180.0)))
         autoPath = AutoPath()
+
 
         tele.run {
             addLine("Status: Initialized")
@@ -49,13 +55,16 @@ class GradeSaverNext : NextFTCOpMode() {
         }
     }
 
+
     override fun onStartButtonPressed() {
         // Schedule the first path
         autoPath.next().schedule()
     }
 
+
     override fun onUpdate() {
         follower.update()
+
 
         tele.run {
             addLine("Path Index: $index / ${autoPath.pathCount}")
@@ -67,42 +76,46 @@ class GradeSaverNext : NextFTCOpMode() {
         }
     }
 
+
     inner class AutoPath {
+
 
         // Poses for autonomous
         val startPose = Pose(33.0, 136.0, Math.toRadians(180.0))
         val scorePose = Pose(47.7, 95.9, Math.toRadians(135.0))
         val scorPoseClearCP = Pose(58.3, 54.4)
 
+
         val pickUpPose1 = Pose(13.5, 83.71, Math.toRadians(180.0))
         val pickUpPose1CP = Pose(61.8, 82.2)
+
 
         val clearOverFlow = Pose(10.0, 74.2, Math.toRadians(90.0))
         val clearOverFlowCp = Pose(56.0, 81.5)
 
-        val pickUpPose2 = Pose(8.0, 59.6, Math.toRadians(180.0))
+
+        val pickUpPose2 = Pose(6.25, 59.6, Math.toRadians(180.0))
         val pickUpPose2CP1 = Pose(52.3, 47.0)
         val pickUpPose2CP2 = Pose(51.4, 61.8)
 
-        val pickUpPose3 = Pose(8.0, 36.0, Math.toRadians(180.0))
+
+        val pickUpPose3 = Pose(7.0, 36.0, Math.toRadians(180.0))
         val pup3CP1 = Pose(57.0, 23.0)
         val pup3CP2 = Pose(45.1, 36.5)
 
+
         val pathCount = 8
+
 
         // Path 0: Shoot preload
         val robotShootPreload = SequentialGroup(
-            Intake.reverseIntakeSlow,
-            Delay(0.15),
-            Intake.stopIntake,
-            ParallelGroup(
-                Outtake.flyWheelAuto,
+            Outtake.flyWheelAuto,
                 FollowPath(
                     follower.pathBuilder()
                         .addPath(BezierLine(startPose, scorePose))
                         .setLinearHeadingInterpolation(toRadians(180.0), toRadians(135.0))
                         .build()
-                )
+
             ),
             Intake.intakeSlow,
             Delay(3.0),
@@ -113,6 +126,7 @@ class GradeSaverNext : NextFTCOpMode() {
             InstantCommand { autoPath.next().schedule() }
         )
 
+
         // Path 1: Go to intake position 1
         val robotIntake1 = SequentialGroup(
             Intake.runIntake,
@@ -122,12 +136,14 @@ class GradeSaverNext : NextFTCOpMode() {
                     .setConstantHeadingInterpolation(Math.toRadians(180.0))
                     .build()
             ),
-            Intake.stopIntake,
-            Intake.reverseIntake,
-            Delay(0.15),
+            Delay(0.35),
+                Intake.stopIntake,
+               Intake.reverseIntake,
+            Delay(0.2),
             Intake.stopIntake,
             InstantCommand { autoPath.next().schedule() }
         )
+
 
         // Path 2: Clear overflow
         val robotClearOverflow = SequentialGroup(
@@ -139,6 +155,7 @@ class GradeSaverNext : NextFTCOpMode() {
             ),
             InstantCommand { autoPath.next().schedule() }
         )
+
 
         // Path 3: Go to shoot position and shoot
         val robotGoToShoot1 = SequentialGroup(
@@ -160,6 +177,7 @@ class GradeSaverNext : NextFTCOpMode() {
             InstantCommand { autoPath.next().schedule() }
         )
 
+
         // Path 4: Go to intake position 2
         val robotIntake2 = SequentialGroup(
             Intake.runIntake,
@@ -169,12 +187,14 @@ class GradeSaverNext : NextFTCOpMode() {
                     .setConstantHeadingInterpolation(Math.toRadians(180.0))
                     .build()
             ),
+            Delay(0.35),
             Intake.stopIntake,
             Intake.reverseIntake,
             Delay(0.15),
             Intake.stopIntake,
             InstantCommand { autoPath.next().schedule() }
         )
+
 
         // Path 5: Go to shoot position and shoot
         val robotGoToShoot2 = SequentialGroup(
@@ -196,6 +216,7 @@ class GradeSaverNext : NextFTCOpMode() {
             InstantCommand { autoPath.next().schedule() }
         )
 
+
         // Path 6: Go to intake position 3
         val robotIntake3 = SequentialGroup(
             Intake.runIntake,
@@ -205,12 +226,14 @@ class GradeSaverNext : NextFTCOpMode() {
                     .setConstantHeadingInterpolation(Math.toRadians(180.0))
                     .build()
             ),
+            Delay(0.35),
             Intake.stopIntake,
             Intake.reverseIntake,
             Delay(0.15),
             Intake.stopIntake,
             InstantCommand { autoPath.next().schedule() }
         )
+
 
         // Path 7: Go to shoot position and shoot (final)
         val robotGoToShoot3 = SequentialGroup(
@@ -219,7 +242,7 @@ class GradeSaverNext : NextFTCOpMode() {
                 FollowPath(
                     follower.pathBuilder()
                         .addPath(BezierLine(pickUpPose3, scorePose))
-                        .setLinearHeadingInterpolation(toRadians(180.0), toRadians(135.0))
+                        .setLinearHeadingInterpolation(toRadians(180.0), toRadians(140.0))
                         .build()
                 )
             ),
@@ -231,6 +254,7 @@ class GradeSaverNext : NextFTCOpMode() {
             )
             // No next() call - this is the final path
         )
+
 
         fun next(): SequentialGroup {
             return when (index++) {

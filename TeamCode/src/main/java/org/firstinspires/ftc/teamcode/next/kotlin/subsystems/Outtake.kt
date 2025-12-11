@@ -218,7 +218,7 @@ object Outtake : Subsystem {  // Added parentheses
 
     val flyWheelAuto: Command
         get() = InstantCommand{
-            fP = 0.88
+            fP = 0.81
         }
 
     val flywheelBack: Command
@@ -236,6 +236,7 @@ object Outtake : Subsystem {  // Added parentheses
     val flywheelOn: Command
         get() = InstantCommand {
            fP = 0.75
+
 
 
         }
